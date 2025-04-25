@@ -1,36 +1,41 @@
 substitutions:
   name: 'blauberg_s14'
-  init: 'BlaubergS14::instance(id(uart_bus));'
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/Benas09/Blauberg_S14
+      ref: dev
+    components: [ blauberg_s14 ]
 
 esphome:
   name: "${name}"
-  platform: ESP8266
+
+esp8266:
   board: d1_mini
-  includes:
-    - blauberg_s14.h
-
-# Enable logging
-logger:
-  level: NONE
-
-# Enable Home Assistant API
-api:
-  password: ""
-
-ota:
-  password: ""
 
 wifi:
-  ssid: "your wifi ssid"
-  password: "your wifi password"
+  ssid: 'your-wifi-ssid'
+  password: 'your-wifi-password'
   power_save_mode: none
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  # manual_ip:
+  #   static_ip: 192.168.1.24
+  #   gateway: 192.168.1.254
+  #   subnet: 255.255.255.0
+
   ap:
     ssid: "${name}_Fallback Hotspot"
-    password: "2jttP6Z7DtWQ"
+    password: "fallbackpw"
 
-captive_portal:
+api:
+
+ota:
+  platform: esphome
+  password: ""
+
+logger:
+  level: NONE
 
 uart:
   id: uart_bus
@@ -38,97 +43,31 @@ uart:
   rx_pin: D1
   baud_rate: 600
 
-custom_component:
-- lambda: |-
-    auto blauberg = ${init}
-    return {blauberg};
-
-output:
-  - platform: template
-    id: blauberg_fan_output
-    type: float
-    write_action:
-      lambda: |-
-        auto blauberg = ${init};
-
-        if (state <= 0.25) {
-          blauberg->set_speed(0);
-        } else if (state <= 0.5) {
-          blauberg->set_speed(1);
-        } else if (state <= 0.75) {
-          blauberg->set_speed(2);
-        } else {
-          blauberg->set_speed(3);
-        }
+blauberg_s14:
+  id: blauberg_s14_controller
+  uart_id: uart_bus
 
 fan:
-  - platform: speed
-    output: blauberg_fan_output
-    name: "${name}_Fan"
-    speed_count: 3
-
-switch:
-  - platform: template
-    name: "${name}_Damper"
-    icon: mdi:hvac
-    lambda: |-
-      auto blauberg = ${init}
-      return blauberg->get_damper();
-    turn_on_action:
-      lambda: |-
-        auto blauberg = ${init}
-        blauberg->set_damper(true);
-    turn_off_action:
-      lambda: |-
-        auto blauberg = ${init}
-        blauberg->set_damper(false);
-  - platform: template
-    name: "${name}_ResetFilter"
-    icon: mdi:swap-horizontal
-    lambda: |-
-      auto blauberg = ${init}
-      return blauberg->get_resetFilter();
-    turn_on_action:
-      lambda: |-
-        auto blauberg = ${init}
-        blauberg->set_resetFilter(true);
-    turn_off_action:
-      lambda: |-
-        auto blauberg = ${init}
-        blauberg->set_resetFilter(false);
-  - platform: restart
-    name: "${name}_Restart"
-
-sensor:
-  - platform: custom
-    lambda: |-
-      auto blauberg = ${init}
-      return {
-        blauberg->sensor_response,
-        blauberg->sensor_speed
-      };
-    sensors:
-      - name: "${name}_Response"
-        icon: mdi:cable-data
-      - name: "${name}_Speed"
-        icon: mdi:fan
+  name: "BlaubergS14 Fan"
+  platform: blauberg_s14
+  blauberg_s14_id: blauberg_s14_controller
 
 binary_sensor:
-  - platform: custom
-    lambda: |-
-      auto blauberg = ${init}
-      return {
-        blauberg->sensor_damper,
-        blauberg->sensor_isDefrosting,
-        blauberg->sensor_filterReplacementRequired
-      };
-    binary_sensors:
-      - name: "${name}_Damper"
-        device_class: opening
-        icon: mdi:hvac
-      - name: "${name}_Defrosting"
-        device_class: running
-        icon: mdi:snowflake-melt
-      - name: "${name}_FilterReplacementRequired"
-        device_class: problem
-        icon: mdi:air-filter
+  platform: blauberg_s14
+  blauberg_s14_id: blauberg_s14_controller
+  damper_status:
+    name: "Summer mode"
+  defrosting_status:
+    name: "Defrosting in progress"
+  filter_replacement_status:
+    name: "Filter replacement required"
+
+switch:
+  - platform: blauberg_s14
+    blauberg_s14_id: blauberg_s14_controller
+    name: "Summer mode"
+
+button:
+  - platform: blauberg_s14
+    blauberg_s14_id: blauberg_s14_controller
+    name: "Reset filter"
