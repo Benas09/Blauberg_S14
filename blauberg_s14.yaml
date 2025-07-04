@@ -35,11 +35,12 @@ ota:
 
 logger:
   level: NONE
+  baud_rate: 0
 
 uart:
   id: uart_bus
-  tx_pin: D0
-  rx_pin: D1
+  tx_pin: GPIO1
+  rx_pin: GPIO3
   baud_rate: 600
 
 blauberg_s14:
@@ -47,7 +48,7 @@ blauberg_s14:
   uart_id: uart_bus
 
 fan:
-  name: "BlaubergS14 Fan"
+  name: "fan"
   platform: blauberg_s14
   blauberg_s14_id: blauberg_s14_controller
 
@@ -55,18 +56,20 @@ binary_sensor:
   platform: blauberg_s14
   blauberg_s14_id: blauberg_s14_controller
   damper_status:
-    name: "Summer mode"
+    name: "summer_mode"
   defrosting_status:
-    name: "Defrosting in progress"
+    name: "defrosting_in_progress"
   filter_replacement_status:
-    name: "Filter replacement required"
+    name: "filter_replacement_required"
 
 switch:
   - platform: blauberg_s14
     blauberg_s14_id: blauberg_s14_controller
-    name: "Summer mode"
+    name: "summer_mode"
 
 button:
   - platform: blauberg_s14
     blauberg_s14_id: blauberg_s14_controller
-    name: "Reset filter"
+    name: "reset_filter"
+  - platform: restart
+    name: "restart"

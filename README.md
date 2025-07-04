@@ -4,30 +4,36 @@ Blauberg S14 replacement controller with ESPHome
 
 With this library you can replace the S14 controller of your air recuperator (mine is KOMFORT ERV EC DB 350) and control it via ESPHome.
 
-![](/images/home_assistant.png)
-![](/images/1695192425987.jpg)
+![](/images/home_assistant_1.png)
+![](/images/home_assitant_2.png)
+![](/images/controller.jpg)
 
 
 ## Connection
 
 ```
- Wire from                  D1 Mini
+ Wire from              LM2596                    D1 Mini          1000uf capacitor (optional)
  original controller
 
-+24V (Yellow)   ----------> 
-RX (Green)      ----------> D1
-TX (Brown)      ----------> D0
-GND (White)     ----------> GND
++24V (Yellow)   --------> V in+  ---> V out+ ---> 5V
+RX (Green)      --------------------------------> GPIO3 (RX)
+TX (Brown)      --------------------------------> GPIO1 (TX)
+GND (White)     --------> V in- ----> V out-----> GND  <---------- negative lead
+                                                  3.3V <---------- positive lead
 ```
-I used DC/DC Buck Converter LM2596 to step down +24V to +5V and power up D1 mini. 
-If you want, you can instead use additional power supply, but dont forget to connect (**!!! ENSURE THAT THERE IS NO VOLTAGE BETEWEEN POWER SUPPLY GND AND RECUPERATOR GND !!!**) GND (Wire from original controller) -> GND (D1 Mini)
+I used DC/DC Buck Converter LM2596 to step down +24V to +5V and power up D1 mini.
+Optional, I connected 1000uF to 3.3V pin of D1 mini. It will make voltage of controller more stable, but it is not required.
+
+In case of using external power supply, please check first, that there is no voltage between air recuperator ground and power supply ground (ground loop). **Otherwise it will fry something.**
 
 **Keep in mind, that your pinout can be different, so double check.**
 
-![](/images/1695192425993.jpg)
+![](/images/usb.jpg)
 
 I cut the wire and soldered USB-A socked, to be able to swap between D1 Mini and original S14 easily
 
-![](/images/1695192425977.jpg)
+![](/images/original_controller_1.jpg)
 
-![](/images/connection.png)
+![](/images/original_controller_2.jpg)
+
+![](/images/original_controller_3.jpg)
