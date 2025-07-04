@@ -37,3 +37,10 @@ I cut the wire and soldered USB-A socked, to be able to swap between D1 Mini and
 ![](/images/original_controller_2.jpg)
 
 ![](/images/original_controller_3.jpg)
+
+## Box
+
+I created custom box to 3d print for this controller. STL files are in box directory.
+My pcb dimensions are 50mm x 70mm
+
+![](/images/box.jpg)
