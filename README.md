@@ -45,7 +45,7 @@ My pcb dimensions are 50mm x 70mm
 
 ![](/images/box.png)
 
-## HomeAssitant automations
+## HomeAssistant automations
 
 Set max speed, when humidity in one of rooms rises above 55% (for at least 10 seconds) and reset to previous speed when it drops below 55%
 ```
@@ -83,4 +83,44 @@ actions:
     action: scene.turn_on
 mode: single
 max_exceeded: silent
+```
+
+Toggle summer mode by outdoor temp
+```
+alias: Recuperator sunner mode toggler
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.aqara_kiemas_temperature
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.aqara_kiemas_temperature
+            above: 10.5
+          - condition: state
+            entity_id: switch.blauberg_s14_summer_mode
+            state: "off"
+        sequence:
+          - action: switch.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: switch.blauberg_s14_summer_mode
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.aqara_kiemas_temperature
+            below: 10
+          - condition: state
+            entity_id: switch.blauberg_s14_summer_mode
+            state: "on"
+        sequence:
+          - action: switch.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: switch.blauberg_s14_summer_mode
+mode: single
 ```
