@@ -33,6 +33,8 @@ ota:
   platform: esphome
   password: ""
 
+# controller uses UART0 (GPIO1 and GPIO3 pins),
+# so in order to prevent unwanted data going to serial, disable the logger
 logger:
   level: NONE
   baud_rate: 0
