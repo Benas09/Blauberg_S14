@@ -87,7 +87,7 @@ max_exceeded: silent
 
 Toggle summer mode by outdoor temp
 ```
-alias: Recuperator sunner mode toggler
+alias: Recuperator summer mode toggler
 description: ""
 triggers:
   - trigger: state
