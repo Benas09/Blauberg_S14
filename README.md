@@ -44,3 +44,43 @@ I created custom box to 3d print for this controller. STL files are in box direc
 My pcb dimensions are 50mm x 70mm
 
 ![](/images/box.png)
+
+## HomeAssitant automations
+
+Set max speed, when humidity in one of rooms rises above 55% (for at least 10 seconds) and reset to previous speed when it drops below 55%
+```
+alias: Recuperator boost
+description: ""
+triggers:
+  - value_template: >-
+      {{ states('sensor.aqara_tualetas1_humidity') > '55' or
+      states('sensor.aqara_tualetas2_humidity') > '55' }}
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    trigger: template
+conditions: []
+actions:
+  - data:
+      scene_id: recuperator_revert
+      snapshot_entities:
+        - fan.blauberg_s14_fan
+    action: scene.create
+  - action: fan.set_percentage
+    metadata: {}
+    data:
+      percentage: 100
+    target:
+      entity_id: fan.blauberg_s14_fan
+  - wait_template: >-
+      {{ states('sensor.aqara_tualetas1_humidity') < '55' and
+      states('sensor.aqara_tualetas2_humidity') < '55' }}
+    continue_on_timeout: true
+  - data: {}
+    target:
+      entity_id: scene.recuperator_revert
+    action: scene.turn_on
+mode: single
+max_exceeded: silent
+```
