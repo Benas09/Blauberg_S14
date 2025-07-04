@@ -18,7 +18,7 @@ With this library you can replace the S14 controller of your air recuperator (mi
 +24V (Yellow)   --------> V in+  ---> V out+ ---> 5V
 RX (Green)      --------------------------------> GPIO3 (RX)
 TX (Brown)      --------------------------------> GPIO1 (TX)
-GND (White)     --------> V in- ----> V out-----> GND  <---------- negative lead
+GND (White)     --------> V in- ----> V out- ---> GND  <---------- negative lead
                                                   3.3V <---------- positive lead
 ```
 I used DC/DC Buck Converter LM2596 to step down +24V to +5V and power up D1 mini.
