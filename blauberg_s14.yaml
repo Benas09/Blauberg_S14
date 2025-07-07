@@ -1,0 +1,77 @@
+substitutions:
+  name: 'blauberg_s14'
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/Benas09/Blauberg_S14
+    components: [ blauberg_s14 ]
+
+esphome:
+  name: "${name}"
+
+esp8266:
+  board: d1_mini
+
+wifi:
+  ssid: 'your-wifi-ssid'
+  password: 'your-wifi-password'
+  power_save_mode: none
+
+  # manual_ip:
+  #   static_ip: 192.168.1.24
+  #   gateway: 192.168.1.254
+  #   subnet: 255.255.255.0
+
+  ap:
+    ssid: "${name}_Fallback Hotspot"
+    password: "fallbackpw"
+
+api:
+
+ota:
+  platform: esphome
+  password: ""
+
+# controller uses UART0 (GPIO1 and GPIO3 pins),
+# so in order to prevent unwanted data going to serial, disable the logger
+logger:
+  level: NONE
+  baud_rate: 0
+
+uart:
+  id: uart_bus
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  baud_rate: 600
+
+blauberg_s14:
+  id: blauberg_s14_controller
+  uart_id: uart_bus
+
+fan:
+  name: "fan"
+  platform: blauberg_s14
+  blauberg_s14_id: blauberg_s14_controller
+
+binary_sensor:
+  platform: blauberg_s14
+  blauberg_s14_id: blauberg_s14_controller
+  damper_status:
+    name: "summer_mode"
+  defrosting_status:
+    name: "defrosting_in_progress"
+  filter_replacement_status:
+    name: "filter_replacement_required"
+
+switch:
+  - platform: blauberg_s14
+    blauberg_s14_id: blauberg_s14_controller
+    name: "summer_mode"
+
+button:
+  - platform: blauberg_s14
+    blauberg_s14_id: blauberg_s14_controller
+    name: "reset_filter"
+  - platform: restart
+    name: "restart"
