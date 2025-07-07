@@ -5,7 +5,7 @@ Blauberg S14 replacement controller with ESPHome
 With this library you can replace the S14 controller of your air recuperator (mine is KOMFORT ERV EC DB 350) and control it via ESPHome.
 
 ![](/images/home_assistant_1.png)
-![](/images/home_assitant_2.png)
+![](/images/home_assistant_2.png)
 ![](/images/controller.jpg)
 
 
