@@ -51,8 +51,8 @@ class BlaubergS14Controller : public Component, public uart::UARTDevice {
   binary_sensor::BinarySensor *sensor_filterReplacementRequired_{nullptr};
 
  private:
-  long lastMillis = 0;
-  long defrostingFromMillis = 0;
+  uint32_t lastMillis = 0;
+  uint32_t defrostingFromMillis = 0;
   bool isDefrosting = false;
   bool filterReplacementRequired = false;
   int currentSpeed = S14_SPEED_0;

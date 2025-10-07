@@ -58,8 +58,10 @@ void BlaubergS14Controller::setup() {
 }
 
 void BlaubergS14Controller::loop() {
-  if (0 == this->lastMillis || this->lastMillis + 90 < millis()) {
-    if (0 == this->defrostingFromMillis || millis() - this->defrostingFromMillis > DEFROSTING_TIME) {
+  uint32_t now = millis();
+
+  if (now - this->lastMillis >= 90) {
+    if (now - this->defrostingFromMillis > DEFROSTING_TIME) {
       write(this->currentSpeed | this->currentDamper | this->currentResetFilter);
 
       if (this->isDefrosting) {
@@ -81,7 +83,16 @@ void BlaubergS14Controller::loop() {
       }
     }
 
-    this->lastMillis = millis();
+    if (this->currentResetFilter) {
+        this->setResetFilter(false);
+        this->filterReplacementRequired = false;
+
+        if (this->sensor_filterReplacementRequired_ != nullptr) {
+          this->sensor_filterReplacementRequired_->publish_state(this->filterReplacementRequired);
+        }
+    }
+
+    this->lastMillis = now;
   }
 
   bool responseReceived = false;
@@ -98,12 +109,8 @@ void BlaubergS14Controller::loop() {
         this->defrostingFromMillis = millis();
       }
 
-      if ((S14_RESPONSE_FILTER_REPLACEMENT_REQUIRED == response) != this->filterReplacementRequired) {
-        this->filterReplacementRequired = S14_RESPONSE_FILTER_REPLACEMENT_REQUIRED == response;
-
-        if (!this->filterReplacementRequired) {
-          this->setResetFilter(false);
-        }
+      if (S14_RESPONSE_FILTER_REPLACEMENT_REQUIRED == response) {
+        this->filterReplacementRequired = true;
 
         if (this->sensor_filterReplacementRequired_ != nullptr) {
           this->sensor_filterReplacementRequired_->publish_state(this->filterReplacementRequired);
